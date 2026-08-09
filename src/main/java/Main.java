@@ -1,6 +1,17 @@
 import pipeline.CompilerPipeline;
 import generator.CompilationResult;
 import semantic.error.SemanticError;
+import flask.ast.builder.FlaskASTBuilder;
+import flask.ast.nodes.statements.ProgramNode;
+import generator.Generator;
+import grammar.flask.FlaskLexer;
+import grammar.flask.FlaskParser;
+import grammar.template.TemplateLexer;
+import grammar.template.TemplateParser;
+import org.antlr.v4.runtime.CharStream;
+import org.antlr.v4.runtime.CharStreams;
+import org.antlr.v4.runtime.CommonTokenStream;
+import template.TemplateASTBuilder;
 import template.ast.TemplateProgramNode;
 import template.ast.jinja.JinjaForNode;
 import template.ast.jinja.JinjaNode;
@@ -8,6 +19,7 @@ import template.ast.jinja.LiteralNode;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
+
 
 /**
  * End-to-end demo of the compiler pipeline described in the project
@@ -40,6 +52,10 @@ import java.nio.file.Path;
  * Analysis, and now Code Generation) - producing, printing, and writing to
  * disk a complete Final HTML Document, with the exact same automatic
  * semantic-error gate demonstrated a second time at this final stage.
+ *   3) Run the Generator, which reads a data array from the Python AST
+ *      (the "items" list, passed into render_template()) and threads it
+ *      through into the Jinja2 tree, unrolling the {% for %} loop with the
+ *      real values.
  */
 public class Main {
 
@@ -55,6 +71,7 @@ public class Main {
 
     /** The original demo: valid Flask source and a valid Jinja2 template, all the way through generation. */
     private static void runValidPipelineDemo() {
+
         String pythonSource = String.join("\n",
             "from flask import Flask, render_template",
             "",
@@ -106,6 +123,25 @@ public class Main {
 
         System.out.println("\n=== Rendered {{ item }} values (proof the 'items' array flowed from Python into the Jinja2 tree) ===");
         for (JinjaNode node : result.getGeneratedTemplate().getJinjaElements()) {
+        ProgramNode pythonAst = buildPythonAst(pythonSource);
+        System.out.println("Python AST built: " + pythonAst.getStatements().size() + " top-level statement(s)\n");
+
+        System.out.println("=== 2) Jinja2 template source ===");
+        System.out.println(templateSource);
+        TemplateProgramNode templateAst = buildTemplateAst(templateSource);
+        System.out.println("Template AST built: " + templateAst.getHtmlElements().size() + " HTML element(s), "
+            + templateAst.getJinjaElements().size() + " Jinja2 element(s)");
+        describeForLoop("Template AST BEFORE generation", templateAst);
+
+        System.out.println("\n=== 3) Generator: passing the Python array into the Jinja2 tree ===");
+        Generator generator = new Generator(pythonAst, templateAst, null);
+        TemplateProgramNode transformed = generator.generate();
+
+        System.out.println(generator.getSummary());
+        describeForLoop("Template AST AFTER generation", transformed);
+
+        System.out.println("\n=== Rendered {{ item }} values (proof the 'items' array flowed from Python into the Jinja2 tree) ===");
+        for (JinjaNode node : transformed.getJinjaElements()) {
             if (node instanceof LiteralNode literal) {
                 System.out.println("  -> " + literal.getStringValue());
             }
@@ -259,6 +295,26 @@ public class Main {
             System.out.println("  " + error);
         }
         System.out.println(result.getSemanticErrors().size() + " error(s) reported. Generator executed: " + result.isGenerated());
+    private static ProgramNode buildPythonAst(String source) {
+        CharStream input = CharStreams.fromString(source);
+        FlaskLexer lexer = new FlaskLexer(input);
+        CommonTokenStream tokens = new CommonTokenStream(lexer);
+        FlaskParser parser = new FlaskParser(tokens);
+        FlaskParser.ProgramContext tree = parser.program();
+
+        FlaskASTBuilder builder = new FlaskASTBuilder();
+        return (ProgramNode) builder.build(tree);
+    }
+
+    private static TemplateProgramNode buildTemplateAst(String source) {
+        CharStream input = CharStreams.fromString(source);
+        TemplateLexer lexer = new TemplateLexer(input);
+        CommonTokenStream tokens = new CommonTokenStream(lexer);
+        TemplateParser parser = new TemplateParser(tokens);
+        TemplateParser.HtmlDocumentContext tree = parser.htmlDocument();
+
+        TemplateASTBuilder builder = new TemplateASTBuilder();
+        return builder.build(tree);
     }
 
     private static void describeForLoop(String label, TemplateProgramNode templateAst) {
