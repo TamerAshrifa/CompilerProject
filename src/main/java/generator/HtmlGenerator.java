@@ -12,7 +12,6 @@ import template.ast.html.JinjaHostNode;
 import template.ast.html.StyleElementNode;
 import template.ast.jinja.JinjaNode;
 import template.visitor.TemplateBaseVisitor;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -34,6 +33,7 @@ import java.util.Set;
  * independent trees.
  *
  * <p>As documented on {@link template.ast.TemplateProgramNode}, the HTML and
+
  * Jinja2 trees are still built independently for semantic-analysis purposes:
  * a Jinja construct that textually sat inside an HTML tag's content is
  * hoisted out to the program's top-level Jinja list while parsing (see
@@ -49,6 +49,7 @@ import java.util.Set;
  * CodeGenerator#generate()}'s unresolved path ran), a placeholder falls back
  * to printing the construct's own regenerated Jinja2 source right there -
  * still an improvement on silently dropping it, and valid Jinja2 either way.
+
  *
  * <p><b>Known, honest limitation</b> (inherited from the existing parser,
  * confirmed by inspecting its output directly rather than assumed): the
@@ -86,6 +87,7 @@ public class HtmlGenerator extends TemplateBaseVisitor<String> {
 
     private final GenerationSupport support = new GenerationSupport("  ");
     private final CssGenerator cssGenerator = new CssGenerator();
+
     private final JinjaGenerator jinjaGenerator = new JinjaGenerator();
     private Map<JinjaNode, List<JinjaNode>> resolvedReplacements;
 
@@ -105,6 +107,7 @@ public class HtmlGenerator extends TemplateBaseVisitor<String> {
         this.resolvedReplacements = resolvedReplacements;
         return this;
     }
+
 
     /** Generates HTML text for every top-level HTML element in a parsed template. */
     public String generate(TemplateProgramNode program) {
@@ -166,6 +169,7 @@ public class HtmlGenerator extends TemplateBaseVisitor<String> {
         if (children.isEmpty()) {
             return sb.append("></").append(tagName).append('>').toString();
         }
+
         if (isInlineFlowContent(children)) {
             // Every child is text and/or a resolved Jinja value (e.g.
             // "Hello, " + {{ name }} in <h1>Hello, {{ name }}</h1>), i.e.
@@ -176,6 +180,7 @@ public class HtmlGenerator extends TemplateBaseVisitor<String> {
                 sb.append(child.accept(this));
             }
             return sb.append("</").append(tagName).append('>').toString();
+
         }
 
         sb.append(">\n");
@@ -225,6 +230,7 @@ public class HtmlGenerator extends TemplateBaseVisitor<String> {
     }
 
     @Override
+
     public String visitJinjaHostNode(JinjaHostNode node) {
         support.mark(node.getNodeName(), node.getLine(), node.getColumn());
         JinjaNode hosted = node.getHostedNode();
@@ -248,6 +254,7 @@ public class HtmlGenerator extends TemplateBaseVisitor<String> {
     }
 
     @Override
+
     public String visitStyleElement(StyleElementNode node) {
         support.mark(node.getNodeName(), node.getLine(), node.getColumn());
         String css = node.getStylesheet().accept(cssGenerator);
@@ -304,6 +311,7 @@ public class HtmlGenerator extends TemplateBaseVisitor<String> {
         return result;
     }
 
+
     /**
      * True when every child is an {@link HtmlTextNode} and/or a {@link
      * JinjaHostNode} - i.e. plain text possibly interleaved with resolved
@@ -318,6 +326,7 @@ public class HtmlGenerator extends TemplateBaseVisitor<String> {
         }
         return true;
     }
+
 
     private String escapeAttributeValue(String value) {
         // Consistent with visitHtmlText: the stored value is raw source text

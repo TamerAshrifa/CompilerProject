@@ -22,7 +22,10 @@ import template.ast.html.HtmlCommentNode;
 import template.ast.html.HtmlElementNode;
 import template.ast.html.HtmlNode;
 import template.ast.html.HtmlTextNode;
+<<<<<<< HEAD
 import template.ast.html.JinjaHostNode;
+=======
+>>>>>>> 4fabbeaaabb9951a448de85aab6f329d73690904
 import template.ast.html.StyleElementNode;
 
 // Jinja2 node imports
@@ -34,7 +37,10 @@ import template.ast.jinja.JinjaExpressionNode;
 import template.ast.jinja.JinjaExtendsNode;
 import template.ast.jinja.JinjaFilterNode;
 import template.ast.jinja.JinjaForNode;
+<<<<<<< HEAD
 import template.ast.jinja.JinjaHtmlRefNode;
+=======
+>>>>>>> 4fabbeaaabb9951a448de85aab6f329d73690904
 import template.ast.jinja.JinjaIfNode;
 import template.ast.jinja.JinjaIncludeNode;
 import template.ast.jinja.JinjaMacroNode;
@@ -250,6 +256,7 @@ public class TemplateBaseVisitor<T> implements TemplateVisitor<T> {
         return defaultResult();
     }
 
+<<<<<<< HEAD
     @Override
     public T visitJinjaHostNode(JinjaHostNode node) {
         // Bare default: no positional resolution/fallback rendering
@@ -259,6 +266,8 @@ public class TemplateBaseVisitor<T> implements TemplateVisitor<T> {
         return defaultResult();
     }
 
+=======
+>>>>>>> 4fabbeaaabb9951a448de85aab6f329d73690904
     // ========================================
     // CSS Nodes
     // ========================================
@@ -509,6 +518,7 @@ public class TemplateBaseVisitor<T> implements TemplateVisitor<T> {
         return defaultResult();
     }
 
+<<<<<<< HEAD
     @Override
     public T visitJinjaHtmlRef(JinjaHtmlRefNode node) {
         // Bookkeeping-only marker; see template.ast.jinja.JinjaHtmlRefNode.
@@ -520,6 +530,8 @@ public class TemplateBaseVisitor<T> implements TemplateVisitor<T> {
         return defaultResult();
     }
 
+=======
+>>>>>>> 4fabbeaaabb9951a448de85aab6f329d73690904
     // ========================================
     // Aggregation & Default Results
     // ========================================

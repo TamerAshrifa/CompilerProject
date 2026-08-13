@@ -444,6 +444,7 @@ public class FullPipelineIntegrationTest {
             throw new AssertionError(
                     "Expected the conditional to be fully resolved (no literal {% if %} left), got:\n"
                             + result.getGeneratedJinjaSource());
+
         }
 
         System.out.println("runComplexRealisticTemplateIntegrationTest passed");

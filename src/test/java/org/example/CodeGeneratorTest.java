@@ -706,24 +706,7 @@ public class CodeGeneratorTest {
         System.out.println("runFinalDocumentGeneratorOnlyOneTreeTest passed");
     }
 
-    /**
-     * A Jinja construct hoisted out from several levels deep inside a
-     * wrapping HTML element (the realistic case — a real page's content
-     * normally sits inside {@code <html><body>...}) is correctly placed back
-     * at its original nesting depth, not after the whole top-level element
-     * it was found under. This used to be an honest, documented limitation:
-     * nothing in the existing AST recorded where an element's content ends,
-     * so re-nesting a hoisted construct looked like it would require either
-     * guessing at an unrecorded span or duplicating {@link HtmlGenerator}'s
-     * own tag-rendering logic elsewhere. Neither turned out to be necessary:
-     * {@link template.ast.html.JinjaHostNode} records <em>where</em> (not how
-     * long) a construct was found — a placeholder left right there among the
-     * surrounding {@link template.ast.html.HtmlNode} children, letting
-     * {@link HtmlGenerator#visitJinjaHostNode} inline whatever it resolves to
-     * at exactly that position — so the HTML/Jinja independence {@link
-     * template.TemplateASTBuilder} relies on for semantic analysis is kept
-     * intact while generation still recombines the two correctly.
-     */
+ 
     private static void runFinalDocumentGeneratorNestedScopeLimitationTest() {
         TemplateProgramNode ast = CompilerPipeline.buildTemplateAst(String.join("\n",
                 "<html>",
@@ -744,6 +727,7 @@ public class CodeGeneratorTest {
         if (!(headerIdx >= 0 && bodyEnd >= 0 && headerIdx < titleIdx && titleIdx < bodyEnd)) {
             throw new AssertionError(
                     "Expected the hoisted content re-nested between <h1>Header</h1> and </body>, got:\n" + merged);
+
         }
         System.out.println("runFinalDocumentGeneratorNestedScopeLimitationTest passed");
     }
@@ -776,6 +760,7 @@ public class CodeGeneratorTest {
      * variables extracted from the Python AST, transferred into the Jinja AST
      * (via the existing, untouched {@code Generator}), generated, and merged
      * into one Final HTML Document with CSS injected.
+
      */
     private static void runCodeGeneratorFinalDocumentFullWorkflowTest() {
         String pythonSource = String.join("\n",

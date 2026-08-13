@@ -3,11 +3,11 @@ package generator;
 import flask.ast.nodes.statements.ProgramNode;
 import template.ast.TemplateProgramNode;
 import template.ast.jinja.JinjaNode;
-
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
 
 /**
  * Orchestrates Requirement 5 code generation: given a Python AST and/or a
@@ -67,6 +67,7 @@ import java.util.Set;
  *       Requirement 6's product pages, so both pathways now share one
  *       real resolution mechanism instead of two differently-capable
  *       ones.</li>
+
  *   <li>{@link #generateFinalDocument()} — everything
  *       {@link #generateWithResolvedContext()} does, plus one more step: the
  *       resolved Template AST is additionally run through
@@ -106,6 +107,7 @@ public class CodeGenerator {
     private String finalHtmlDocument;
     private Context intermediateContext;
     private TemplateProgramNode resolvedTemplateAst;
+<<<<<<< HEAD
     private Map<JinjaNode, List<JinjaNode>> resolvedReplacements = Collections.emptyMap();
     private Set<JinjaNode> hostedReplacementNodes = Collections.emptySet();
     private boolean generated = false;
@@ -139,12 +141,16 @@ public class CodeGenerator {
         }
         if (templateAst != null) {
             generatedJinjaSource = jinjaGenerator.generate(templateAst);
+<<<<<<< HEAD
             // Explicitly reset rather than assume: this method intentionally
             // does no cross-language resolution (see its own Javadoc above),
             // so a JinjaHostNode must fall back to raw Jinja2 source here -
             // even if generateWithResolvedContext() already ran on this same
             // instance and left htmlGenerator holding a stale map.
             generatedHtmlSource = htmlGenerator.withResolvedReplacements(null).generate(templateAst);
+=======
+            generatedHtmlSource = htmlGenerator.generate(templateAst);
+>>>>>>> 4fabbeaaabb9951a448de85aab6f329d73690904
         }
         generated = true;
         return this;
@@ -152,12 +158,21 @@ public class CodeGenerator {
 
     /**
      * Like {@link #generate()}, but first derives {@link Context} ("Intermediate
+<<<<<<< HEAD
      * Generation Data") from {@code pythonAst} and (when both ASTs are
      * present) fully resolves the Template AST against it — including
      * {@code {% for %}} unrolling and {@code {% if %}} collapsing — via the
      * existing {@link Generator}, so resolvable {@code {{ variable }}}
      * references print their concrete value instead of the variable
      * reference itself.
+=======
+     * Generation Data") from {@code pythonAst} via the existing
+     * {@link PythonContextExtractor}, and — when both ASTs are present — runs
+     * the Template AST through the existing {@link TemplateTransformer} with
+     * that context before generating Jinja2/HTML text, so resolvable
+     * {@code {{ variable }}} references print their concrete value instead of
+     * the variable reference itself.
+>>>>>>> 4fabbeaaabb9951a448de85aab6f329d73690904
      *
      * @return this instance, for chaining
      * @throws IllegalStateException if constructed with {@code semanticAnalysisSucceeded=false}
@@ -169,6 +184,7 @@ public class CodeGenerator {
 
         if (pythonAst != null) {
             generatedPythonSource = pythonGenerator.generate(pythonAst);
+<<<<<<< HEAD
 
             // Reuses the same Generator engine that CompilerPipeline.compile()
             // and PageCompiler already drive for Requirements 2 and 6, instead
@@ -189,13 +205,26 @@ public class CodeGenerator {
             intermediateContext = generator.getContext();
             resolvedReplacements = generator.getResolvedReplacements();
             hostedReplacementNodes = generator.getHostedReplacementNodes();
+=======
+            PythonContextExtractor extractor = new PythonContextExtractor();
+            extractor.extract(pythonAst);
+            intermediateContext = new Context(extractor.getRenderArguments());
+
+            if (templateAst != null) {
+                effectiveTemplateAst = new TemplateTransformer(intermediateContext).transform(templateAst);
+            }
+>>>>>>> 4fabbeaaabb9951a448de85aab6f329d73690904
         }
 
         resolvedTemplateAst = effectiveTemplateAst;
 
         if (effectiveTemplateAst != null) {
             generatedJinjaSource = jinjaGenerator.generate(effectiveTemplateAst);
+<<<<<<< HEAD
             generatedHtmlSource = htmlGenerator.withResolvedReplacements(resolvedReplacements).generate(effectiveTemplateAst);
+=======
+            generatedHtmlSource = htmlGenerator.generate(effectiveTemplateAst);
+>>>>>>> 4fabbeaaabb9951a448de85aab6f329d73690904
         }
 
         generated = true;
@@ -222,6 +251,7 @@ public class CodeGenerator {
     public CodeGenerator generateFinalDocument() {
         generateWithResolvedContext();
         if (resolvedTemplateAst != null) {
+<<<<<<< HEAD
             // finalDocumentGenerator deliberately owns its own HtmlGenerator
             // instance rather than reusing the htmlGenerator field above
             // (see this class's own field-declaration comment), so the
@@ -231,6 +261,8 @@ public class CodeGenerator {
             // just resolved it correctly a moment ago.
             finalDocumentGenerator.getHtmlGenerator().withResolvedReplacements(resolvedReplacements);
             finalDocumentGenerator.withHostedReplacementNodes(hostedReplacementNodes);
+=======
+>>>>>>> 4fabbeaaabb9951a448de85aab6f329d73690904
             finalHtmlDocument = finalDocumentGenerator.generate(resolvedTemplateAst);
         }
         return this;
@@ -279,7 +311,11 @@ public class CodeGenerator {
     /**
      * The Template AST actually used for Jinja/HTML/final-document generation
      * on the last {@link #generateWithResolvedContext()} or
+<<<<<<< HEAD
      * {@link #generateFinalDocument()} call: the {@link Generator}-resolved
+=======
+     * {@link #generateFinalDocument()} call: the {@code TemplateTransformer}
+>>>>>>> 4fabbeaaabb9951a448de85aab6f329d73690904
      * output when a Python AST was supplied, otherwise the original Template
      * AST unchanged. {@code null} until one of those methods has run, or if
      * no Template AST was supplied at all.

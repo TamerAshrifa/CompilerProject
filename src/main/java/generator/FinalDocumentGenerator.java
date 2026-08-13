@@ -13,6 +13,7 @@ import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Set;
 
+
 /**
  * Assembles the pipeline's "Final HTML Document" stage: it merges the output
  * of {@link HtmlGenerator} and {@link JinjaGenerator} — run over the same
@@ -38,6 +39,7 @@ import java.util.Set;
  * never by re-parsing text or string search-and-replace — while skipping any
  * top-level Jinja node a placeholder already renders inline, so nothing
  * doubles up (see {@link #withHostedReplacementNodes} and {@link #generate}).
+
  *
  * <h2>What "merge by position" means, precisely</h2>
  * Every {@link HtmlNode} and {@link JinjaNode} records the source line/column
@@ -69,6 +71,7 @@ import java.util.Set;
  * keeping a {@code {% for %}} loop body as plain Jinja text (no HTML tags
  * inside the loop itself) remains the correct way to drive a list of HTML
  * elements from resolved data.
+
  *
  * <h2>CSS injection</h2>
  * No separate mechanism is needed for this: a {@code <style>} tag is an
@@ -88,6 +91,7 @@ public class FinalDocumentGenerator {
     private final HtmlGenerator htmlGenerator;
     private final JinjaGenerator jinjaGenerator;
     private Set<JinjaNode> hostedReplacementNodes = Collections.emptySet();
+
 
     public FinalDocumentGenerator() {
         this(new HtmlGenerator(), new JinjaGenerator());
@@ -152,6 +156,7 @@ public class FinalDocumentGenerator {
             collectHostedJinjaNodes(htmlNode, hostedInThisTree);
         }
 
+
         List<PositionedItem> items = new ArrayList<>();
         for (HtmlNode node : program.getHtmlElements()) {
             items.add(new PositionedItem(node.getLine(), node.getColumn(), node, null));
@@ -189,6 +194,7 @@ public class FinalDocumentGenerator {
         // Other HtmlNode subtypes (text, comment, style, attribute) have no
         // nested HtmlNode children to walk.
     }
+
 
     public HtmlGenerator getHtmlGenerator() {
         return htmlGenerator;

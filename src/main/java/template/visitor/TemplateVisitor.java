@@ -19,7 +19,10 @@ import template.ast.html.HtmlAttributeNode;
 import template.ast.html.HtmlCommentNode;
 import template.ast.html.HtmlElementNode;
 import template.ast.html.HtmlTextNode;
+<<<<<<< HEAD
 import template.ast.html.JinjaHostNode;
+=======
+>>>>>>> 4fabbeaaabb9951a448de85aab6f329d73690904
 import template.ast.html.StyleElementNode;
 import template.ast.jinja.JinjaAttributeAccessNode;
 import template.ast.jinja.JinjaBinaryOpNode;
@@ -34,7 +37,10 @@ import template.ast.jinja.JinjaExtendsNode;
 import template.ast.jinja.JinjaFilterApplicationNode;
 import template.ast.jinja.JinjaFilterNode;
 import template.ast.jinja.JinjaForNode;
+<<<<<<< HEAD
 import template.ast.jinja.JinjaHtmlRefNode;
+=======
+>>>>>>> 4fabbeaaabb9951a448de85aab6f329d73690904
 import template.ast.jinja.JinjaIdentifierNode;
 import template.ast.jinja.JinjaIfNode;
 import template.ast.jinja.JinjaIncludeNode;
@@ -93,6 +99,7 @@ public interface TemplateVisitor<T> {
      */
     T visitHtmlComment(HtmlCommentNode node);
 
+<<<<<<< HEAD
     /**
      * Visit a JinjaHostNode: a marker left in the HTML tree at the exact
      * position a Jinja2 construct was hoisted out of. See {@link
@@ -100,6 +107,8 @@ public interface TemplateVisitor<T> {
      */
     T visitJinjaHostNode(JinjaHostNode node);
 
+=======
+>>>>>>> 4fabbeaaabb9951a448de85aab6f329d73690904
     // ========================================
     // CSS Nodes (5 methods)
     // ========================================
@@ -273,6 +282,7 @@ public interface TemplateVisitor<T> {
      */
     T visitJinjaComment(JinjaCommentNode node);
 
+<<<<<<< HEAD
     /**
      * Visit a JinjaHtmlRefNode: a bookkeeping-only marker recording that an
      * HTML node textually appeared inside this {@code {% if %}}/
@@ -283,6 +293,8 @@ public interface TemplateVisitor<T> {
      */
     T visitJinjaHtmlRef(JinjaHtmlRefNode node);
 
+=======
+>>>>>>> 4fabbeaaabb9951a448de85aab6f329d73690904
     // ========================================
     // Legacy Compatibility (deprecated)
     // ========================================

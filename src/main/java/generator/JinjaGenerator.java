@@ -193,6 +193,7 @@ public class JinjaGenerator extends TemplateBaseVisitor<String> {
     public String visitJinjaSubscript(JinjaSubscriptNode node) {
         support.mark(node.getNodeName(), node.getLine(), node.getColumn());
         return renderJinjaOperand(node.getObject(), ATOM_PRECEDENCE) + "[" + renderJinjaValue(node.getIndex()) + "]";
+
     }
 
     @Override
@@ -206,6 +207,7 @@ public class JinjaGenerator extends TemplateBaseVisitor<String> {
                 sb.append(", ");
             }
             sb.append(renderJinjaValue(arguments.get(i)));
+
         }
         return sb.append(')').toString();
     }
@@ -381,6 +383,7 @@ public class JinjaGenerator extends TemplateBaseVisitor<String> {
             // for precedence to decide, so skip straight to renderJinjaValue.
             return renderJinjaValue(operand);
         }
+
         String text = operand.accept(this);
         if (jinjaOperandPrecedence(operand) < minimumPrecedence) {
             return "(" + text + ")";
@@ -437,6 +440,7 @@ public class JinjaGenerator extends TemplateBaseVisitor<String> {
         }
         return sb.toString();
     }
+
 
     private int jinjaOperandPrecedence(JinjaNode node) {
         if (node instanceof JinjaBinaryOpNode) {

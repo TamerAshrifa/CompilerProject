@@ -16,7 +16,10 @@ import template.ast.html.HtmlAttributeNode;
 import template.ast.html.HtmlTextNode;
 import template.ast.html.HtmlCommentNode;
 import template.ast.html.StyleElementNode;
+<<<<<<< HEAD
 import template.ast.html.JinjaHostNode;
+=======
+>>>>>>> 4fabbeaaabb9951a448de85aab6f329d73690904
 
 // CSS AST imports
 import template.ast.css.CssAtRuleNode;
@@ -30,7 +33,10 @@ import template.ast.jinja.JinjaNode;
 import template.ast.jinja.JinjaProgramNode;
 import template.ast.jinja.JinjaVariableNode;
 import template.ast.jinja.JinjaExpressionNode;
+<<<<<<< HEAD
 import template.ast.jinja.JinjaHtmlRefNode;
+=======
+>>>>>>> 4fabbeaaabb9951a448de85aab6f329d73690904
 import template.ast.jinja.JinjaFilterNode;
 import template.ast.jinja.JinjaIfNode;
 import template.ast.jinja.JinjaElifNode;
@@ -359,6 +365,7 @@ public class TemplateASTBuilder extends TemplateParserBaseVisitor<Object> {
         return topLevel;
     }
 
+<<<<<<< HEAD
     /** True for an {@link HtmlTextNode} whose content is entirely whitespace; see the call site in {@link #emit}. */
     private boolean isInsignificantWhitespace(HtmlNode node) {
         return node instanceof HtmlTextNode textNode && textNode.getContent().trim().isEmpty();
@@ -387,6 +394,12 @@ public class TemplateASTBuilder extends TemplateParserBaseVisitor<Object> {
                 stack.peek().addJinjaChild(new JinjaHtmlRefNode(htmlNode, htmlNode.getLine(), htmlNode.getColumn()));
             }
         } else if (!stack.isEmpty() && item instanceof JinjaNode jinjaNode) {
+=======
+    private void emit(Object item, Deque<Frame> stack, List<Object> topLevel) {
+        if (stack.isEmpty() || item instanceof HtmlNode) {
+            topLevel.add(item);
+        } else if (item instanceof JinjaNode jinjaNode) {
+>>>>>>> 4fabbeaaabb9951a448de85aab6f329d73690904
             stack.peek().addJinjaChild(jinjaNode);
         } else {
             topLevel.add(item);
@@ -423,6 +436,7 @@ public class TemplateASTBuilder extends TemplateParserBaseVisitor<Object> {
                     children.add(htmlNode);
                 } else if (item instanceof JinjaNode jinjaNode) {
                     hoistedJinjaNodes.add(jinjaNode);
+<<<<<<< HEAD
                     // Leave a placeholder in THIS element's own children, at
                     // the exact position the Jinja2 construct textually
                     // appeared, so HtmlGenerator can later inline whatever
@@ -430,6 +444,8 @@ public class TemplateASTBuilder extends TemplateParserBaseVisitor<Object> {
                     // able to place resolved output before or after this
                     // element's entire rendered text. See JinjaHostNode.
                     children.add(new JinjaHostNode(jinjaNode, jinjaNode.getLine(), jinjaNode.getColumn()));
+=======
+>>>>>>> 4fabbeaaabb9951a448de85aab6f329d73690904
                 }
             }
         }

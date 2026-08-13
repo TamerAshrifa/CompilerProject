@@ -9,6 +9,7 @@ import java.util.Set;
 import template.ast.TemplateProgramNode;
 import template.ast.html.HtmlNode;
 import template.ast.html.JinjaHostNode;
+
 import template.ast.jinja.JinjaBlockNode;
 import template.ast.jinja.JinjaCommentNode;
 import template.ast.jinja.JinjaElifNode;
@@ -75,6 +76,7 @@ public class Generator {
      */
     private final Set<JinjaNode> hostedReplacementNodes = Collections.newSetFromMap(new IdentityHashMap<>());
 
+
     public Generator(Object pythonAst, TemplateProgramNode templateAst, Object symbolTable) {
         this.pythonAst = pythonAst;
         this.templateAst = templateAst;
@@ -139,6 +141,7 @@ public class Generator {
             return;
         }
 
+
         // The Jinja pass runs first: transformIf populates
         // suppressedHtmlNodes as a side effect (see suppressUntakenBranches)
         // while it determines which branch, if any, was taken - so the HTML
@@ -185,6 +188,7 @@ public class Generator {
         }
         for (JinjaNode transformedNode : transformedJinja) {
             result.addJinjaElement(transformedNode);
+
         }
 
         this.transformedTemplate = result;
@@ -244,6 +248,7 @@ public class Generator {
     }
 
     /**
+
      * Transforms a single Jinja node into zero, one, or many nodes.
      *
      * <p>Most node kinds map 1:1, but this can now also:</p>
@@ -307,12 +312,14 @@ public class Generator {
             return List.of(new JinjaIncludeNode(includeNode.getTemplatePath(), includeNode.getLine(), includeNode.getColumn()));
         }
 
+
         if (node instanceof JinjaHtmlRefNode) {
             // Bookkeeping-only marker; already consumed by
             // suppressUntakenBranches while resolving the enclosing {% if %}.
             // Never part of renderable output - see JinjaHtmlRefNode.
             return List.of();
         }
+
 
         return List.of(node);
     }
@@ -381,6 +388,7 @@ public class Generator {
      * if/elif/else structure is kept, with each branch still individually
      * transformed, and nothing is suppressed (since which branch will
      * actually run is not known here).
+
      */
     private List<JinjaNode> transformIf(JinjaIfNode ifNode) {
         Boolean condition = JinjaConditionEvaluator.evaluate(ifNode.getConditionTree(), ifNode.getCondition(), context);
@@ -392,6 +400,7 @@ public class Generator {
             List<JinjaElifNode> elifs = ifNode.getElifNodes();
             for (int i = 0; i < elifs.size(); i++) {
                 JinjaElifNode elif = elifs.get(i);
+
                 Boolean elifCondition = JinjaConditionEvaluator.evaluate(elif.getConditionTree(), elif.getCondition(), context);
                 if (elifCondition == null) {
                     return List.of(structurallyTransformedIf(ifNode));
@@ -409,6 +418,7 @@ public class Generator {
             // untaken, so pass an index no real branch can ever equal.
             suppressUntakenBranches(ifNode, -1);
             return List.of();
+
         }
         return List.of(structurallyTransformedIf(ifNode));
     }
@@ -473,6 +483,7 @@ public class Generator {
             }
         }
     }
+
 
     private JinjaIfNode structurallyTransformedIf(JinjaIfNode ifNode) {
         List<JinjaNode> thenBody = transformBody(ifNode.getThenBody());
@@ -542,6 +553,7 @@ public class Generator {
         return transformedTemplate;
     }
 
+
     /**
      * (original hoisted Jinja node &rarr; its resolved replacement(s)) for
      * every top-level entry of the source Template AST's Jinja list, as
@@ -567,6 +579,7 @@ public class Generator {
     public Set<JinjaNode> getHostedReplacementNodes() {
         return Collections.unmodifiableSet(hostedReplacementNodes);
     }
+
 
     public String getTemplateName() {
         return templateName;
